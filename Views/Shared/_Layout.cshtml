@@ -2,17 +2,14 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="utf-8" />
+     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Bibliotec</title>
-    @*adicionamos essa linha:*@
     <link rel="icon" type="image/png" sizes="32x32" href="~/images/logo-mobile.png">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/Bibliotec.styles.css" asp-append-version="true" />
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
-    @*adicionamos essa linha:*@
     <link rel="stylesheet" href="~/Bibliotec.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
@@ -20,7 +17,8 @@
 </head>
 
 <body>
-    <header>
+     <!-- ************ CABEÇALHO ************ -->
+    <header class="header">
         <div class="container header-flex">
             <img src="~/images/logo-recortado.png" alt=""
                 class="logotipo. Imagem de um libro aberto e um texto escrito Bibliotech" />
@@ -33,14 +31,14 @@
             <img src="~/images/menu-hamburger.png" alt="" class="menu-hamburger" id="menu-hamburger"
                 onclick="mostraMenu()" />
         </div>
-
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    @* <div class="container">
+        <main role="main" class="pb-3"> *@
             @RenderBody()
-        </main>
-    </div>
+        @* </main>
+    </div> *@
 
+    <!-- ************ Rodapé ************ -->
     <footer class="footer">
         <div class="container footer-flex">
 
