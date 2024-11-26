@@ -23,7 +23,7 @@ namespace Bibliotec.Models
         //eu falo pra esse atributo que ele e uma FK
 
         [ForeignKey("Curso")]
-        public int CursoID { get; set; }
+        public int? CursoID { get; set; }
         public Curso? Curso { get; set; }
 
         

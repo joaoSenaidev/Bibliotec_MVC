@@ -50,12 +50,11 @@ namespace Bibliotec.Contexts
                 //a string da conexão do banco de dados
                 //Data Source => Nome do Servidor do banco de dados
                 //Initial Catalog -> Nome do Banco de dados
-                optionsBuilder.UseSqlServer(@"Data Source=NOTE34-S28\\SQLEXPRESS;
-                Initial Catalog = ;
+                optionsBuilder.UseSqlServer(@"Data Source=NOTE34-S28\SQLEXPRESS;
+                Initial Catalog = Bibliotec_mvc;
                 User Id = sa ;
                 Password = 123;
-                Integrated Security=true;
-                TrustServerCertificate = true; ");
+                TrustServerCertificate = true;");
                 
             }
         }
