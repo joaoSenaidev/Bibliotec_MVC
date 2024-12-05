@@ -94,7 +94,9 @@ namespace Bibliotec_mvc.Controllers
                 }
 
                 novoLivro.Imagem = arquivo.FileName;
-            }else{
+            }
+            else
+            {
                 novoLivro.Imagem = "padrao.png";
             }
 
@@ -133,7 +135,8 @@ namespace Bibliotec_mvc.Controllers
 
 
         [Route("Editar/{id}")]
-        public IActionResult Editar(int id){
+        public IActionResult Editar(int id)
+        {
 
             ViewBag.Admin = HttpContext.Session.GetString("Admin")!;
 
@@ -158,6 +161,119 @@ namespace Bibliotec_mvc.Controllers
 
             return View();
         }
+
+        // metodo que atualiza as informacoes dos livros
+        [Route("Atualizar")]
+        public IActionResult Atualizar(IFormCollection form, int id, IFormFile imagem)
+        {
+            //buscar livro especifico pelo ID
+            Livro livroAtualizado = context.Livro.FirstOrDefault(livro => livro.LivroID == id)!;
+
+            livroAtualizado.Nome = form["Nome"];
+            livroAtualizado.Descricao = form["Descricao"].ToString();
+            livroAtualizado.Editora = form["Editora"].ToString();
+            livroAtualizado.Escritor = form["Escritor"].ToString();
+            livroAtualizado.Idioma = form["Idioma"].ToString();
+            livroAtualizado.Imagem = form["Imagem"].ToString();
+
+            //upload de imagem
+            if (imagem != null && imagem.Length > 0)
+            {
+                //definir o caminho da minha imagem do livro ATUAL, que eu quero alterar:
+                var caminhoImagem = Path.Combine("wwwroot/images/Livros", imagem.FileName);
+
+
+                //Verificar se o usuario colocou uma imagem para atualizar o livro
+                if (!string.IsNullOrEmpty(livroAtualizado.Imagem))
+                {
+                    //caso exista, ele ira ser excluida
+                    var caminhoImagemAntiga = Path.Combine("wwwroot/images/Livros",
+                    livroAtualizado.Imagem);
+                    //ver se existe uma imagem no caminho antigo
+                    if (System.IO.File.Exists(caminhoImagemAntiga))
+                    {
+                        System.IO.File.Delete(caminhoImagemAntiga);
+                    }
+                }
+
+                //Salvar imagem nova
+                using (var stream = new FileStream(caminhoImagem, FileMode.Create))
+                {
+                    imagem.CopyTo(stream);
+                }
+
+                //Subir essa mudanca para o banco de dados
+                livroAtualizado.Imagem = imagem.FileName;
+            }
+            
+            //CATEGORIAS:
+            
+            //PRIMEIRO: Precisamos pegar as categorias selecionadas do usuario
+            var categoriasSelecionadas = form["Categoria"].ToList();
+            //SEGUNDA: Pegaremos as categorias ATUAIS do livro
+            var categoriasAtuais = context.LivroCategoria.Where(livro => livro.LivroID == id).ToList();
+            //TERCEIRO: Removeremos as categorias antigas
+            foreach(var categoria in categoriasAtuais)
+            {
+                if (!categoriasSelecionadas.Contains(categoria.CategoriaID.ToString()))
+                {
+                    //nos vamos remover a categoria do nosso context
+                    context.LivroCategoria.Remove(categoria);
+                }
+            }
+            //QUARTO: Adicionaremos as novas
+            foreach(var categoria in categoriasSelecionadas)
+            {
+                //verificando se nao existe a categoria nessa livro
+                    if (!categoriasAtuais.Any(c => c.CategoriaID.ToString() == categoria))
+                    {
+                        context.LivroCategoria.Add(new LivroCategoria{
+                            LivroID = id,
+                            CategoriaID = int.Parse(categoria),
+                        });
+                    }
+            }	
+
+            context.SaveChanges();
+
+
+            return LocalRedirect("/Livro");
+
+        }
+
+        //metodo excluir o livro
+        [Route("Excluir")]
+        public IActionResult Excluir(int id)
+        {
+            //buscar qual o livro do id que precisamos excluir 
+            Livro livroEncontrado = context.Livro.First(livro => livro.LivroID == id);
+
+            //buscar as categorias do livro
+            var categoriasDoLivro = context.LivroCategoria.Where(livro => livro.LivroID == id).ToList();
+
+            //Precisa excluir primeiro o registro da tabela intermediaria 
+            foreach(var categoria in categoriasDoLivro)
+            {
+                context.LivroCategoria.Remove(categoria);
+            }
+
+            context.Livro.Remove(livroEncontrado);
+
+            context.SaveChanges();
+
+
+
+
+            return LocalRedirect("/Livro");
+        }
+
+
+
+
+
+
+
+
 
         // [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         // public IActionResult Error()
